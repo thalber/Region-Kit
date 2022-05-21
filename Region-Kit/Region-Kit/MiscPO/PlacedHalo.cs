@@ -18,7 +18,8 @@ using static RegionKit.MiscPO.MiscPOStatic;
 
 using GHalo = TempleGuardGraphics.Halo;
 using URAnd = UnityEngine.Random;
-using UDe = UnityEngine.Debug;
+//using UDe = UnityEngine.Debug;
+using PWood = RegionKit.Utils.PetrifiedWood;
 
 namespace RegionKit.MiscPO
 {
@@ -33,7 +34,7 @@ namespace RegionKit.MiscPO
                 halo = new GHalo(g, 0);
                 reghalos.Set(halo, this);
             }
-            else UDe.LogWarning("Cached guards not found!");
+            else PWood.WriteLine("Cached guards not found!");
             
         }
         public override void Update(bool eu)
@@ -59,7 +60,7 @@ namespace RegionKit.MiscPO
         #region idrawable
         public void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
         {
-            if (halo == null) UDe.LogWarning("HALO IS NULL!");
+            if (halo == null) PWood.WriteLine("HALO IS NULL!");
             sLeaser.sprites = new FSprite[halo.totalSprites];
             halo.InitiateSprites(sLeaser, rCam);
             AddToContainer(sLeaser, rCam, null);
