@@ -9,12 +9,12 @@ namespace RegionKit
 		public static void Apply()
 		{
 			On.SunBlocker.InitiateSprites += (orig, self, sLeaser, rCam) =>
-            {
-                orig(self, sLeaser, rCam);
-                sLeaser.sprites[0].scaleX = 1500f;
-                sLeaser.sprites[0].scaleY = 900f;
-                self.AddToContainer(sLeaser, rCam, null);
-            };
-        }
+			{
+				orig(self, sLeaser, rCam);
+				sLeaser.sprites[0].scaleX = 1500f;
+				sLeaser.sprites[0].scaleY = 900f;
+				self.AddToContainer(sLeaser, rCam, null);
+			};
+		}
 	}
 }

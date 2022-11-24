@@ -1,24 +1,22 @@
-﻿using System;
+﻿using MonoMod.RuntimeDetour;
+using RegionKit.POM;
+using RegionKit.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MonoMod.RuntimeDetour;
-using RegionKit.Utils;
-using RegionKit.POM;
 using UnityEngine;
-
 using static RegionKit.POM.PlacedObjectsManager;
-
 using GHalo = global::TempleGuardGraphics.Halo;
-using URand = UnityEngine.Random;
 using UDe = UnityEngine.Debug;
+using URand = UnityEngine.Random;
 
 namespace RegionKit.MiscPO
 {
     internal static class MiscPOStatic
     {
         private static bool EnabledOnce = false;
-        private static readonly Type _mt = typeof(MiscPOStatic); 
+        private static readonly Type _mt = typeof(MiscPOStatic);
         internal static void Enable()
         {
             if (!EnabledOnce)
@@ -27,7 +25,7 @@ namespace RegionKit.MiscPO
                 GenerateHooks();
             }
             EnabledOnce = true;
-            foreach (var hk in mHk) if (!hk.IsApplied) hk.Apply();
+            foreach (Hook hk in mHk) if (!hk.IsApplied) hk.Apply();
             //On.TempleGuardGraphics.Halo.RadAtCircle += halo_racc;
             //On.Room.Loaded += guardcache;
         }
@@ -40,18 +38,18 @@ namespace RegionKit.MiscPO
         {
             //slightly evil (and nonfunct) abstr hack
             if (self.game == null) { orig(self); return; }
-            var phfound = false;
-            foreach (var po in self.roomSettings.placedObjects) phfound |= po.data is PlacedHaloData;
+            bool phfound = false;
+            foreach (PlacedObject? po in self.roomSettings.placedObjects) phfound |= po.data is PlacedHaloData;
             if (phfound)
             {
-                AbstractCreature ac = new AbstractCreature(self.world, StaticWorld.GetCreatureTemplate(CreatureTemplate.Type.TempleGuard), null, self.GetWorldCoordinate(new Vector2(-50000f, -50000f)), new EntityID(-1, (self.abstractRoom.index)));
+                AbstractCreature ac = new(self.world, StaticWorld.GetCreatureTemplate(CreatureTemplate.Type.TempleGuard), null, self.GetWorldCoordinate(new Vector2(-50000f, -50000f)), new EntityID(-1, self.abstractRoom.index));
                 ac.realizedCreature = new TempleGuard(ac, self.world);
                 ac.realizedCreature.graphicsModule = new TempleGuardGraphics(ac.realizedCreature);
                 cachedGuards.Set(self, ac.realizedCreature.graphicsModule as TempleGuardGraphics);
             }
             orig(self);
         }
-        internal static AttachedField<GHalo, PlacedHalo> reghalos = new AttachedField<GHalo, PlacedHalo>();
+        internal static AttachedField<GHalo, PlacedHalo> reghalos = new();
         internal static PlacedHalo chal;
 
         internal delegate void Room_Void_None(Room instance);
@@ -64,19 +62,19 @@ namespace RegionKit.MiscPO
         internal static void Room_NotViewed(Room_Void_None orig, Room instance)
         {
             orig(instance);
-            foreach (var uad in instance.updateList) if (uad is INotifyWhenRoomIsViewed tar) tar.RoomNoLongerViewed();
+            foreach (UpdatableAndDeletable? uad in instance.updateList) if (uad is INotifyWhenRoomIsViewed tar) tar.RoomNoLongerViewed();
         }
         internal static void Room_Viewed(Room_Void_None orig, Room instance)
         {
             orig(instance);
-            foreach (var uad in instance.updateList) if (uad is INotifyWhenRoomIsViewed tar) tar.RoomViewed();
+            foreach (UpdatableAndDeletable? uad in instance.updateList) if (uad is INotifyWhenRoomIsViewed tar) tar.RoomViewed();
         }
 
         internal static float halo_speed(
             Func<GHalo, float> orig,
             GHalo self)
         {
-            if (reghalos.TryGet(self, out var ph))
+            if (reghalos.TryGet(self, out PlacedHalo? ph))
             {
                 return ph.speed;
             }
@@ -85,9 +83,9 @@ namespace RegionKit.MiscPO
         }
         private static float halo_racc(On.TempleGuardGraphics.Halo.orig_RadAtCircle orig, GHalo self, float c, float ts, float dis)
         {
-            if (reghalos.TryGet(self, out var ph) || chal != null)
+            if (reghalos.TryGet(self, out PlacedHalo? ph) || chal != null)
             {
-                ph = ph ?? chal;
+                ph ??= chal;
                 //UDe.LogWarning("scrom");
                 return ph.RadAtCircle(c, ts, dis);
             }
@@ -117,7 +115,7 @@ namespace RegionKit.MiscPO
 
         internal static void Disable()
         {
-            foreach (var hk in mHk) if (hk.IsApplied) hk.Undo();
+            foreach (Hook hk in mHk) if (hk.IsApplied) hk.Undo();
             //On.TempleGuardGraphics.Halo.RadAtCircle -= halo_racc;
             //On.Room.Loaded -= guardcache;
         }

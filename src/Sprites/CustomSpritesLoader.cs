@@ -11,8 +11,6 @@
 //using UnityEngine;
 //using System.IO;
 
-//[module: UnverifiableCode]
-//[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 
 //namespace CustomSpritesLoader
 //{
@@ -34,6 +32,6 @@
 //        public static CustomSpritesLoader instance;
 
 //        //private static bool initialLoadLock;
-        
+
 //    }
 //}

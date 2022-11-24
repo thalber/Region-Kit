@@ -3,8 +3,10 @@ using DevInterface;
 using System.Linq;
 using UnityEngine;
 
-namespace RegionKit.Objects {
-	public class PWLightRod : SSLightRod{
+namespace RegionKit.Objects
+{
+	public class PWLightRod : SSLightRod
+	{
 		public PWLightRod(PlacedObject placedObject, Room room) : base(placedObject, room)
 		{
 			this.color = (this.rodData as PWLightRodData).color;
@@ -123,18 +125,18 @@ namespace RegionKit.Objects {
 					string idstring = IDstring;
 					switch (idstring)
 					{
-						case "ColorR_Slider":
-							num = ((parentNode.parentNode as PWLightRodRepresentation).pObj.data as PWLightRodData).color.r;
-							NumberText = ((int)(num * 255)).ToString();
-							break;
-						case "ColorG_Slider":
-							num = ((parentNode.parentNode as PWLightRodRepresentation).pObj.data as PWLightRodData).color.g;
-							NumberText = ((int)(num * 255)).ToString();
-							break;
-						case "ColorB_Slider":
-							num = ((parentNode.parentNode as PWLightRodRepresentation).pObj.data as PWLightRodData).color.b;
-							NumberText = ((int)(num * 255)).ToString();
-							break;
+					case "ColorR_Slider":
+						num = ((parentNode.parentNode as PWLightRodRepresentation).pObj.data as PWLightRodData).color.r;
+						NumberText = ((int)(num * 255)).ToString();
+						break;
+					case "ColorG_Slider":
+						num = ((parentNode.parentNode as PWLightRodRepresentation).pObj.data as PWLightRodData).color.g;
+						NumberText = ((int)(num * 255)).ToString();
+						break;
+					case "ColorB_Slider":
+						num = ((parentNode.parentNode as PWLightRodRepresentation).pObj.data as PWLightRodData).color.b;
+						NumberText = ((int)(num * 255)).ToString();
+						break;
 					}
 					RefreshNubPos(num);
 				}
@@ -144,15 +146,15 @@ namespace RegionKit.Objects {
 					PWLightRodData lightrodColor = (parentNode.parentNode as PWLightRodRepresentation).pObj.data as PWLightRodData;
 					switch (IDstring)
 					{
-						case "ColorR_Slider":
-							lightrodColor.color.r = nubPos;
-							break;
-						case "ColorG_Slider":
-							lightrodColor.color.g = nubPos;
-							break;
-						case "ColorB_Slider":
-							lightrodColor.color.b = nubPos;
-							break;
+					case "ColorR_Slider":
+						lightrodColor.color.r = nubPos;
+						break;
+					case "ColorG_Slider":
+						lightrodColor.color.g = nubPos;
+						break;
+					case "ColorB_Slider":
+						lightrodColor.color.b = nubPos;
+						break;
 					}
 					base.NubDragged(nubPos);
 				}

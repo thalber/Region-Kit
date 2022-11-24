@@ -5,14 +5,14 @@ using System.Text;
 
 namespace RegionKit.Utils
 {
-    /// <summary>
-    /// summon him to die instantly
-    /// </summary>
-    public class Joar : Exception
-    {
-        public Joar()
-        {
-            throw new Joar();
-        }
-    }
+	/// <summary>
+	/// summon him to die instantly
+	/// </summary>
+	public class Joar : Exception
+	{
+		public Joar()
+		{
+			throw new Joar();
+		}
+	}
 }

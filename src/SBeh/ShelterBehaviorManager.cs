@@ -1,10 +1,10 @@
-﻿using RWCustom;
-using System.Collections.Generic;
-using UnityEngine;
-using System.Linq;
-using RegionKit.POM;
-using RegionKit.Utils;
+﻿using RegionKit.POM;
 using RegionKit.SBeh;
+using RegionKit.Utils;
+using RWCustom;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace RegionKit.SBeh
 {
@@ -28,7 +28,7 @@ namespace RegionKit.SBeh
 
         public static bool Contains(this IntRect rect, IntVector2 pos, bool incl = true) // Cmon joar
         {
-            if(incl) return pos.x >= rect.left && pos.x <= rect.right && pos.y >= rect.bottom && pos.y <= rect.top;
+            if (incl) return pos.x >= rect.left && pos.x <= rect.right && pos.y >= rect.bottom && pos.y <= rect.top;
             return pos.x > rect.left && pos.x < rect.right && pos.y > rect.bottom && pos.y < rect.top;
         }
 
@@ -74,7 +74,7 @@ namespace RegionKit.SBeh
         /// <summary>
         /// Whether the shelter requires player to hold Down control to sleep.
         /// </summary>
-        public bool holdToTrigger { get { return _htt || Override_HTT; } set { _htt = value; } }
+        public bool holdToTrigger { get => _htt || Override_HTT; set => _htt = value; }
         /// <summary>
         /// Global HTT override.
         /// </summary>
@@ -196,7 +196,8 @@ namespace RegionKit.SBeh
                     else if (instance.roomSettings.placedObjects[i].type == SBehCentral.EnumExt_ShelterBehaviorsMod.ShelterBhvrSpawnPosition)
                     {
                         this.AddSpawnPosition(instance.roomSettings.placedObjects[i]);
-                    }else if (instance.roomSettings.placedObjects[i].type == PlacedObject.Type.BrokenShelterWaterLevel)
+                    }
+                    else if (instance.roomSettings.placedObjects[i].type == PlacedObject.Type.BrokenShelterWaterLevel)
                     {
                         this.brokenWaterLevel = instance.roomSettings.placedObjects[i];
                     }
@@ -244,7 +245,7 @@ namespace RegionKit.SBeh
             }
             else
             {
-                closedFac = ((!room.game.setupValues.cycleStartUp) ? 0f : Mathf.InverseLerp(data.GetValue<int>("ini") + data.GetValue<int>("ouf"), data.GetValue<int>("ini"), (float)this.room.game.world.rainCycle.timer));
+                closedFac = (!room.game.setupValues.cycleStartUp) ? 0f : Mathf.InverseLerp(data.GetValue<int>("ini") + data.GetValue<int>("ouf"), data.GetValue<int>("ini"), (float)this.room.game.world.rainCycle.timer);
                 closeSpeed = this.room.game.world.rainCycle.timer <= data.GetValue<int>("ini") ? 0f : -1f / (float)data.GetValue<int>("ouf");
             }
 
@@ -269,7 +270,8 @@ namespace RegionKit.SBeh
 
         public override void Update(bool eu)
         {
-            if (deleteHackDoorNextFrame) {
+            if (deleteHackDoorNextFrame)
+            {
                 if (tempSpawnPosHackDoor != null)
                 {
                     tempSpawnPosHackDoor.Destroy();
@@ -282,7 +284,7 @@ namespace RegionKit.SBeh
             if (this.room.game.world.rainCycle.timer == data.GetValue<int>("ini") && this.room.game.setupValues.cycleStartUp)
             {
                 float closeSpeed = -1f / data.GetValue<int>("ouf");
-                foreach (var sub in subscribers)
+                foreach (IReactToShelterEvents sub in subscribers)
                 {
                     sub.ShelterEvent(1f, closeSpeed);
                 }
@@ -334,8 +336,8 @@ namespace RegionKit.SBeh
                     {
                         ContitionalLog("Updated HUD");
                         HUD.HUD hud = room.game.cameras[i].hud;
-                        hud.showKarmaFoodRain = (hud.owner.RevealMap ||
-                            ((hud.owner as Player).room != null && (hud.owner as Player).room.abstractRoom.shelter && (hud.owner as Player).room.abstractRoom.realizedRoom != null && !this.broken));
+                        hud.showKarmaFoodRain = hud.owner.RevealMap ||
+                            ((hud.owner as Player).room != null && (hud.owner as Player).room.abstractRoom.shelter && (hud.owner as Player).room.abstractRoom.realizedRoom != null && !this.broken);
                         if (holdToTrigger && (hud.owner as Player).readyForWin) // trigger sleep
                         {
                             hud.foodMeter.forceSleep = 0;
@@ -375,11 +377,11 @@ namespace RegionKit.SBeh
                                 ContitionalLog("player in trigger zone");
                             }
 
-                            if(p.touchedNoInputCounter == 0)
+                            if (p.touchedNoInputCounter == 0)
                             {
                                 noMovingCounter = data.GetValue<int>("ftt");
                             }
-                            
+
                             if (!holdToTrigger && p.readyForWin && p.touchedNoInputCounter > 1)
                             {
                                 ContitionalLog("ready not moving");
@@ -402,7 +404,8 @@ namespace RegionKit.SBeh
                                 // need something to preserve last counter through player update, zeroes if ready4win
                                 actualForceSleepCounter[p] += data.GetValue<int>("htts") - (noVanillaDoors ? 0 : 1); // gets uses default for int so this works
                                 p.forceSleepCounter = actualForceSleepCounter[p];
-                            } else if (noVanillaDoors && p.input[0].y < 0 && !p.input[0].jmp && !p.input[0].thrw && !p.input[0].pckp && p.IsTileSolid(1, 0, -1) && (p.input[0].x == 0 || ((!p.IsTileSolid(1, -1, -1) || !p.IsTileSolid(1, 1, -1)) && p.IsTileSolid(1, p.input[0].x, 0))))
+                            }
+                            else if (noVanillaDoors && p.input[0].y < 0 && !p.input[0].jmp && !p.input[0].thrw && !p.input[0].pckp && p.IsTileSolid(1, 0, -1) && (p.input[0].x == 0 || ((!p.IsTileSolid(1, -1, -1) || !p.IsTileSolid(1, 1, -1)) && p.IsTileSolid(1, p.input[0].x, 0))))
                             {
                                 // allow starve
                                 actualForceSleepCounter[p] += 1;
@@ -416,10 +419,10 @@ namespace RegionKit.SBeh
                     }
                 }
             }
-            
-            if(closing && hasNoDoors)
+
+            if (closing && hasNoDoors)
             {
-                if(room.waterObject != null && data.GetValue<bool>("ani") && brokenWaterLevel != null)
+                if (room.waterObject != null && data.GetValue<bool>("ani") && brokenWaterLevel != null)
                 {
                     room.waterObject.fWaterLevel = Mathf.Lerp(this.room.waterObject.originalWaterLevel, this.brokenWaterLevel.pos.y + 50f, Mathf.Pow((float)noDoorCloseCount / ((float)data.GetValue<int>("ftw") + 20f), 1.6f));
                 }
@@ -445,7 +448,7 @@ namespace RegionKit.SBeh
                         }
                     }
                 }
-                if(noDoorCloseCount == data.GetValue<int>("ftw"))
+                if (noDoorCloseCount == data.GetValue<int>("ftw"))
                 {
                     bool flag = true;
                     for (int i = 0; i < this.room.game.Players.Count; i++)
@@ -476,12 +479,12 @@ namespace RegionKit.SBeh
             closing = true;
             noDoorCloseCount = 0;
             if (!noVanillaDoors) room.shelterDoor.Close();
-            foreach (var door in customDoors)
+            foreach (ShelterDoor door in customDoors)
             {
                 door.Close();
             }
             float closeSpeed = 1f / (float)data.GetValue<int>("ftw");
-            foreach (var sub in subscribers)
+            foreach (IReactToShelterEvents sub in subscribers)
             {
                 sub.ShelterEvent(0f, closeSpeed);
             }
@@ -505,21 +508,23 @@ namespace RegionKit.SBeh
         public void ApplySpawnHack(IntVector2 coords)
         {
             if (tempSpawnPosHackDoor != null && room.updateList.Contains(tempSpawnPosHackDoor)) room.updateList.Remove(tempSpawnPosHackDoor);
-            tempSpawnPosHackDoor = new ShelterDoor(room);
-            tempSpawnPosHackDoor.closeTiles = new IntVector2[0];
-            tempSpawnPosHackDoor.playerSpawnPos = coords;
+            tempSpawnPosHackDoor = new ShelterDoor(room)
+            {
+                closeTiles = new IntVector2[0],
+                playerSpawnPos = coords
+            };
             room.updateList.Insert(0, tempSpawnPosHackDoor);
-            
+
         }
         internal int spawnCycleCtr;
         /// <summary>
         /// Applies the next queued spawn position from <see cref="spawnPositions"/>, applies vanilla one if there is none.
         /// </summary>
-        public  void CycleSpawnPosition()
+        public void CycleSpawnPosition()
         {
             spawnCycleCtr++;
             if (spawnCycleCtr >= spawnPositions.Count) spawnCycleCtr = 0;
-            ApplySpawnHack((spawnPositions.Count > 0) ? spawnPositions[spawnCycleCtr] : vanillaSpawnPosition); 
+            ApplySpawnHack((spawnPositions.Count > 0) ? spawnPositions[spawnCycleCtr] : vanillaSpawnPosition);
         }
         /// <summary>
         /// Checks whether players are in a zone eligible for starting sleep sequence.
@@ -548,11 +553,11 @@ namespace RegionKit.SBeh
                 for (int i = 0; i < room.game.Players.Count; i++)
                 {
                     AbstractCreature ap = room.game.Players[i];
-                    foreach (var rect in triggers)
+                    foreach (IntRect rect in triggers)
                     {
                         if (!rect.Contains(ap.pos.Tile)) return false; // anyone out of a positive trigger
                     }
-                    foreach (var rect in noTriggers)
+                    foreach (IntRect rect in noTriggers)
                     {
                         if (rect.Contains(ap.pos.Tile)) return false; // anyone in a negative trigger
                     }
@@ -594,7 +599,7 @@ namespace RegionKit.SBeh
             int oldseed = Random.seed;
             try
             {
-                if(room.game.IsStorySession)
+                if (room.game.IsStorySession)
                     Random.seed = salt + incrementalsalt++ + room.game.clock + room.game.GetStorySession.saveState.seed + room.game.GetStorySession.saveState.cycleNumber + room.game.GetStorySession.saveState.deathPersistentSaveData.deaths + room.game.GetStorySession.saveState.deathPersistentSaveData.survives + Mathf.FloorToInt(room.game.GetStorySession.difficulty * 100) + Mathf.FloorToInt(room.game.GetStorySession.saveState.deathPersistentSaveData.howWellIsPlayerDoing * 100);
                 if (noVanillaDoors)
                 {
@@ -620,7 +625,7 @@ namespace RegionKit.SBeh
             int preCounter = room.game.rainWorld.progression.miscProgressionData.starvationTutorialCounter; // Prevent starvation tutorial dupes
             if (room.game.IsStorySession)
                 room.game.rainWorld.progression.miscProgressionData.starvationTutorialCounter = 0;
-            ShelterDoor newDoor = new ShelterDoor(room);
+            ShelterDoor newDoor = new(room);
             if (room.game.IsStorySession)
                 room.game.rainWorld.progression.miscProgressionData.starvationTutorialCounter = preCounter;
 
@@ -633,7 +638,7 @@ namespace RegionKit.SBeh
             newDoor.dir = dir.ToVector2();
             for (int n = 0; n < 4; n++)
             {
-                newDoor.closeTiles[n] = originTile + dir * (n + 2);
+                newDoor.closeTiles[n] = originTile + (dir * (n + 2));
             }
             newDoor.pZero += newDoor.dir * 60f;
             newDoor.perp = Custom.PerpendicularVector(newDoor.dir);
@@ -681,9 +686,9 @@ namespace RegionKit.SBeh
                 this.room = room;
                 placedObject = pObj;
                 placedObjectIndex = room.roomSettings.placedObjects.IndexOf(pObj);
-                if(room.game.Players.Count == 0) this.Destroy();
+                if (room.game.Players.Count == 0) this.Destroy();
                 // player loaded in room
-                foreach (var p in room.game.Players)
+                foreach (AbstractCreature? p in room.game.Players)
                 {
                     if (p.pos.room == room.abstractRoom.index)
                     {
@@ -694,7 +699,7 @@ namespace RegionKit.SBeh
                 // recently displayed
                 if (room.game.session is StoryGameSession)
                 {
-                    if((room.game.session as StoryGameSession).saveState.ItemConsumed(room.world, false, room.abstractRoom.index, placedObjectIndex))
+                    if ((room.game.session as StoryGameSession).saveState.ItemConsumed(room.world, false, room.abstractRoom.index, placedObjectIndex))
                     {
                         this.Destroy();
                     }
@@ -712,17 +717,17 @@ namespace RegionKit.SBeh
                 {
                     switch (this.message)
                     {
-                        case 0:
-                            this.room.game.cameras[0].hud.textPrompt.AddMessage(this.room.game.manager.rainWorld.inGameTranslator.Translate("This place is safe from the rain and most predators"), 20, 160, true, true);
-                            this.message++;
-                            break;
-                        case 1:
-                            this.room.game.cameras[0].hud.textPrompt.AddMessage(this.room.game.manager.rainWorld.inGameTranslator.Translate("With enough food, hold DOWN to hibernate"), 40, 160, false, true);
-                            this.message++;
-                            break;
-                        default:
-                            this.Consume();
-                            break;
+                    case 0:
+                        this.room.game.cameras[0].hud.textPrompt.AddMessage(this.room.game.manager.rainWorld.inGameTranslator.Translate("This place is safe from the rain and most predators"), 20, 160, true, true);
+                        this.message++;
+                        break;
+                    case 1:
+                        this.room.game.cameras[0].hud.textPrompt.AddMessage(this.room.game.manager.rainWorld.inGameTranslator.Translate("With enough food, hold DOWN to hibernate"), 40, 160, false, true);
+                        this.message++;
+                        break;
+                    default:
+                        this.Consume();
+                        break;
                     }
                 }
             }
